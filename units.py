@@ -13,18 +13,23 @@ class AttackSpecs:
     armor_piercing = attr.ib()
     max_distance = attr.ib()
     damage_per_hit = attr.ib(1)
+    can_a_hit_make_damage_to_multi_fighters = attr.ib(False)
 
 
 @attr.s
-class Unit:
+class Fighter:
     mele_specs = attr.ib(AttackSpecs(0, 0, 0))
     range_specs = attr.ib(AttackSpecs(0, 0, 0))
-    # unit hp is a list of health points for each troop member
-    hp = attr.ib([1])
+    hp = attr.ib(1)
 
     def _attack(self, target, attack_specs, near_hero=False, distance=0, cover=False):
+        # cannot atack a target which is out of range
         if distance > attack_specs.max_distance:
-            return 0
+            return target
+
+        # cannot atack a target with no fighters alive
+        if not target.fighters:
+            return target
 
         hit_floor = 3
         if cover:
@@ -33,33 +38,58 @@ class Unit:
             hit_floor -= 1
 
         attack_dices = throw_dices(attack_specs.dices)
+        print('attack dices :', attack_dices)
         hits = len([d for d in attack_dices if d >= hit_floor])
+        print('hit floor :', hit_floor)
+        print('hits :', hits)
 
         defense_floor = 2 + attack_specs.armor_piercing
         defense_dices = throw_dices(hits)
+        print('defense dices:', defense_dices)
         damage = [attack_specs.damage_per_hit for d in defense_dices if d < defense_floor]
+        print('defense floor :', defense_floor)
+        print('damage:', damage)
 
-        self._apply_damage(target, damage)
-        return damage
+        print('target hp before:', target.hp)
+        target.get_damage(damage, attack_specs.can_a_hit_make_damage_to_multi_fighters)
+        print('damage :', damage)
+        print('target hp after:', target.hp)
 
-    def _apply_damage(self, target, damage):
-        for i, hp in enumerate(target.hp):
-            if hp < damage:
-                target.hp[i] = 0
-                damage -= hp
-            else:
-                target.hp[i] -= damage
-                damage = 0
-
-            if damage == 0:
-                break
-
+        return target
 
     def mele_attack(self, target, near_hero=False):
         return self._attack(target, self.mele_specs, near_hero)
 
     def range_attack(self, target, distance, cover=False, near_hero=False):
         return self._attack(target, self.range_specs, near_hero, distance, cover)
+
+
+@attr.s
+class Unit:
+    fighters = attr.ib(factory=list)
+
+    @property
+    def hp(self):
+        return [c.hp for c in self.fighters]
+
+    def take_damage(self, damage, can_a_hit_make_damage_to_multi_fighters):
+        if not self.fighters:
+            raise Exception('You cannot attack a unit without fighters')
+        if can_a_hit_make_damage_to_multi_fighters:
+            reformed_damage = []
+            for hit_damage in damage:
+                reformed_damage.extend([1]*hit_damage)
+
+            damage = reformed_damage
+
+        for hit_damage in damage:
+            first_fighter = self.fighters[0]
+            if first_fighter.hp > hit_damage:
+                first_fighter.hp -= hit_damage
+            else:
+                self.fighters.remove(first_fighter)
+                if not self.fighters:
+                    break
 
 
 @attr.s
