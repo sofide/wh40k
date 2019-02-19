@@ -38,22 +38,13 @@ class Fighter:
             hit_floor -= 1
 
         attack_dices = throw_dices(attack_specs.dices)
-        print('attack dices :', attack_dices)
         hits = len([d for d in attack_dices if d >= hit_floor])
-        print('hit floor :', hit_floor)
-        print('hits :', hits)
 
         defense_floor = 2 + attack_specs.armor_piercing
         defense_dices = throw_dices(hits)
-        print('defense dices:', defense_dices)
         damage = [attack_specs.damage_per_hit for d in defense_dices if d < defense_floor]
-        print('defense floor :', defense_floor)
-        print('damage:', damage)
 
-        print('target hp before:', target.hp)
         target.get_damage(damage, attack_specs.can_a_hit_make_damage_to_multi_fighters)
-        print('damage :', damage)
-        print('target hp after:', target.hp)
 
         return target
 
