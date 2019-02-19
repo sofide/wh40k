@@ -10,6 +10,16 @@ class Unit:
     def hp(self):
         return [c.hp for c in self.fighters]
 
+    def mele_attack(self, target, near_hero=False):
+        for fighter in self.fighters:
+            fighter.mele_attack(target, near_hero)
+        return target
+
+    def range_attack(self, target, distance, cover=False, near_hero=False):
+        for fighter in self.fighters:
+            fighter.range_attack(target, distance, cover, near_hero)
+        return target
+
     def get_damage(self, damage, can_a_hit_make_damage_to_multi_fighters):
         if not self.fighters:
             raise Exception('You cannot attack a unit without fighters')
