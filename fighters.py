@@ -86,12 +86,12 @@ class RegularMarineFighter(Fighter):
 
 
 @attr.s
-class LaserMarineFighter(RegularMarine):
+class LaserMarineFighter(RegularMarineFighter):
     range_specs = attr.ib(AttackSpecs(1, 4, 48, damage_per_hit=2))
 
 
 @attr.s
-class MissileMarineFighter(RegularMarine):
+class MissileMarineFighter(RegularMarineFighter):
     range_specs = attr.ib(AttackSpecs(1, 0, 48, damage_per_hit=3,
                                       can_a_hit_make_damage_to_multi_fighters=True))
 

@@ -10,7 +10,7 @@ class Unit:
     def hp(self):
         return [c.hp for c in self.fighters]
 
-    def take_damage(self, damage, can_a_hit_make_damage_to_multi_fighters):
+    def get_damage(self, damage, can_a_hit_make_damage_to_multi_fighters):
         if not self.fighters:
             raise Exception('You cannot attack a unit without fighters')
         if can_a_hit_make_damage_to_multi_fighters:
