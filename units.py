@@ -1,5 +1,6 @@
 import attr
 
+import fighters
 
 @attr.s
 class Unit:
@@ -27,3 +28,33 @@ class Unit:
                 self.fighters.remove(first_fighter)
                 if not self.fighters:
                     break
+
+
+@attr.s
+class HeroUnit(Unit):
+    fighters = attr.ib([fighters.HeroFighter()])
+
+
+@attr.s
+class TerminatorUnit(Unit):
+    fighters = attr.ib([fighters.TerminatorFighter()])
+
+
+@attr.s
+class LaserMarinesUnit(Unit):
+    fighters = attr.ib([fighters.RegularMarineFighter()]*4 + [fighters.LaserMarineFighter()])
+
+
+@attr.s
+class MissileMarinesUnit(Unit):
+    fighters = attr.ib([fighters.RegularMarineFighter()]*4 + [fighters.MissileMarineFighter()])
+
+
+@attr.s
+class AssaultMarinesUnit(Unit):
+    fighters = attr.ib([fighters.AssaultMarineFighter()]*5)
+
+
+@attr.s
+class DreadnoughtUnit(Unit):
+    fighters = attr.ib([fighters.DreadnoughtFighter()])
